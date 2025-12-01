@@ -24,11 +24,6 @@ fn run() -> Result<String, String> {
 
         iterations -= tick;
       }
-
-      /*at_zero += match current {
-        0 => 1,
-        _ => 0
-      };*/
     }
 
     return Ok(format!("{}", at_zero));
