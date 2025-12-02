@@ -9,7 +9,6 @@ fn run() -> Result<String, String> {
     for range in ranges {
         let min_length = get_length(range.min);
         let max_length = get_length(range.max);
-
         for current_length in min_length..=max_length {
             for unit_size in 1..=(max_length / 2) {
                 if current_length % unit_size == 0 {
