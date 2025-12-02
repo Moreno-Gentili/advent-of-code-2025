@@ -13,7 +13,7 @@ fn run() -> Result<String, String> {
     let ranges = parse_input()?;
     for range in ranges {
         for size in get_length(range.min)..=get_length(range.max) {
-            for n in 1..=99999_u64 {
+            for n in 1..=99999_u64 { // TODO: This can be optimized
                 let length = get_length(n);
                 if size % length != 0 || size == length {
                     continue;
