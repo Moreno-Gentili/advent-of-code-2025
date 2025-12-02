@@ -13,10 +13,10 @@ fn run() -> Result<String, String> {
         for current_length in min_length..=max_length {
             for unit_size in 1..=(max_length / 2) {
                 if current_length % unit_size == 0 {
-                    let iterations = (current_length / unit_size) as usize;
-                    if iterations > 1 {
+                    let repetitions = (current_length / unit_size) as usize;
+                    if repetitions > 1 {
                         for n in 10_u64.pow(unit_size - 1)..=repeat(9, unit_size as usize) {
-                            let repeated_n = repeat(n, iterations);
+                            let repeated_n = repeat(n, repetitions);
                             if repeated_n >= range.min && repeated_n <= range.max {
                                 results.insert(repeated_n);
                             }
