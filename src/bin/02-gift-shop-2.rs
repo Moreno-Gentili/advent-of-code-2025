@@ -35,12 +35,10 @@ fn get_length(n: u64) -> u32 {
 }
 
 fn repeat(n: u64, iterations: usize) -> u64 {
-  let mut result = n;
-  let size = n.ilog10() as usize + 1;
-  let multiplier = 10_u64.pow(size as u32);
-  for _ in 1..iterations {
-    result *= multiplier;
-    result += n
+  let mut result = 0;
+  let multiplier = 10_u64.pow(get_length(n));
+  for _ in 0..iterations {
+    result = result * multiplier + n;
   }
 
   return result;
