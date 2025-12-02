@@ -13,22 +13,33 @@ fn run() -> Result<String, String> {
     let ranges = parse_input()?;
     for range in ranges {
         for size in range.min.to_string().len()..=range.max.to_string().len() {
-            for n in 1..=99999 {
-                let str_n = n.to_string();
-                if size % str_n.len() != 0 || size == str_n.len() {
+            for n in 1..=99999_i64 {
+                let length = n.ilog10() as usize + 1;
+                if size % length != 0 || size == length {
                     continue;
                 }
 
-                let repeated_n = str_n.repeat(size / str_n.len());
-                let parsed_n = repeated_n.parse::<i64>().unwrap();
-                if parsed_n >= range.min && parsed_n <= range.max {
-                  results.insert(parsed_n);
+                let repeated_n = repeat(n, size / length);
+                if repeated_n >= range.min && repeated_n <= range.max {
+                  results.insert(repeated_n);
                 }
             }
         }
     }
 
     return Ok(format!("{}", results.iter().sum::<i64>()));
+}
+
+fn repeat(n: i64, iterations: usize) -> i64 {
+  let mut result = n;
+  let size = n.ilog10() as usize + 1;
+  let multiplier = 10_i64.pow(size as u32);
+  for _ in 1..iterations {
+    result *= multiplier;
+    result += n
+  }
+
+  return result;
 }
 
 fn parse_input() -> Result<Vec<Range>, String> {
