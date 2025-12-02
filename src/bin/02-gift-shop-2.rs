@@ -1,27 +1,27 @@
 use std::collections::HashSet;
 use std::fs;
-
-fn main() {
-    match run() {
-        Ok(result) => println!("{}", result),
-        Err(err) => panic!("{}", err),
-    }
-}
+use std::ops::Sub;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn run() -> Result<String, String> {
     let mut results = HashSet::new();
     let ranges = parse_input()?;
     for range in ranges {
-        for size in get_length(range.min)..=get_length(range.max) {
-            for n in 1..=99999_u64 { // TODO: This can be optimized
-                let length = get_length(n);
-                if size % length != 0 || size == length {
-                    continue;
-                }
+        let min_length = get_length(range.min);
+        let max_length = get_length(range.max);
 
-                let repeated_n = repeat(n, (size / length) as usize);
-                if repeated_n >= range.min && repeated_n <= range.max {
-                  results.insert(repeated_n);
+        for current_length in min_length..=max_length {
+            for unit_size in 1..=max_length / 2 {
+                for n in 1..=repeat(9, unit_size as usize) {
+                    let length = get_length(n);
+                    if current_length % length != 0 {
+                        continue;
+                    }
+
+                    let repeated_n = repeat(n, (current_length / length) as usize);
+                    if repeated_n >= range.min && repeated_n <= range.max {
+                        results.insert(repeated_n);
+                    }
                 }
             }
         }
@@ -31,42 +31,61 @@ fn run() -> Result<String, String> {
 }
 
 fn get_length(n: u64) -> u32 {
-  return (n.ilog10() as usize + 1) as u32;
+    return (n.ilog10() as usize + 1) as u32;
 }
 
 fn repeat(n: u64, iterations: usize) -> u64 {
-  let mut result = 0;
-  let multiplier = 10_u64.pow(get_length(n));
-  for _ in 0..iterations {
-    result = result * multiplier + n;
-  }
+    let mut result = 0;
+    let multiplier = 10_u64.pow(get_length(n));
+    for _ in 0..iterations {
+        result = result * multiplier + n;
+    }
 
-  return result;
+    return result;
 }
 
 fn parse_input() -> Result<Vec<Range>, String> {
-    match fs::read_to_string(format!(
-        "./src/bin/{}.txt",
-        env!("CARGO_BIN_NAME").split("-").nth(0).unwrap_or("")
-    )) {
-        Ok(message) => Ok(message
-            .split(",")
-            .map(|tuple| {
-                let parts: Vec<u64> = tuple
-                    .split("-")
-                    .map(|n| n.parse::<u64>().unwrap())
-                    .collect();
-                return Range {
-                    min: parts[0],
-                    max: parts[1],
-                };
-            })
-            .collect()),
-        Err(err) => return Err(format!("Could not read input {}", err)),
-    }
+    let input = read_file()?;
+    return Ok(input
+        .split(",")
+        .map(|tuple| {
+            let parts: Vec<u64> = tuple
+                .split("-")
+                .map(|n| n.parse::<u64>().unwrap())
+                .collect();
+            return Range {
+                min: parts[0],
+                max: parts[1],
+            };
+        })
+        .collect());
 }
 
 struct Range {
     min: u64,
     max: u64,
 }
+
+///////////
+
+fn main() {
+    let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    match run() {
+        Ok(result) => println!("Result: {}", result),
+        Err(err) => panic!("{}", err),
+    }
+    let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    println!("It took: {}ms", end.sub(start).as_millis());
+}
+
+fn read_file() -> Result<String, String> {
+    return match fs::read_to_string(format!(
+        "./src/bin/{}.txt",
+        env!("CARGO_BIN_NAME").split("-").nth(0).unwrap_or("")
+    )) {
+        Ok(message) => Ok(message),
+        Err(err) => return Err(format!("Could not read input {}", err)),
+    };
+}
+
+// 19058204438
