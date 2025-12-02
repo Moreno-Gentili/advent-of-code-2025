@@ -11,16 +11,16 @@ fn run() -> Result<String, String> {
         let max_length = get_length(range.max);
 
         for current_length in min_length..=max_length {
-            for unit_size in 1..=max_length / 2 {
-                for n in 1..=repeat(9, unit_size as usize) {
-                    let length = get_length(n);
-                    if current_length % length != 0 {
-                        continue;
-                    }
-
-                    let repeated_n = repeat(n, (current_length / length) as usize);
-                    if repeated_n >= range.min && repeated_n <= range.max {
-                        results.insert(repeated_n);
+            for unit_size in 1..=(max_length / 2) {
+                if current_length % unit_size == 0 {
+                    let iterations = (current_length / unit_size) as usize;
+                    if iterations > 1 {
+                        for n in 10_u64.pow(unit_size - 1)..=repeat(9, unit_size as usize) {
+                            let repeated_n = repeat(n, iterations);
+                            if repeated_n >= range.min && repeated_n <= range.max {
+                                results.insert(repeated_n);
+                            }
+                        }
                     }
                 }
             }
@@ -87,5 +87,3 @@ fn read_file() -> Result<String, String> {
         Err(err) => return Err(format!("Could not read input {}", err)),
     };
 }
-
-// 19058204438
