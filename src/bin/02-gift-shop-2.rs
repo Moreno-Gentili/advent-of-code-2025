@@ -12,14 +12,14 @@ fn run() -> Result<String, String> {
     let mut results = HashSet::new();
     let ranges = parse_input()?;
     for range in ranges {
-        for size in range.min.to_string().len()..=range.max.to_string().len() {
-            for n in 1..=99999_i64 {
-                let length = n.ilog10() as usize + 1;
+        for size in get_length(range.min)..=get_length(range.max) {
+            for n in 1..=99999_u64 {
+                let length = get_length(n);
                 if size % length != 0 || size == length {
                     continue;
                 }
 
-                let repeated_n = repeat(n, size / length);
+                let repeated_n = repeat(n, (size / length) as usize);
                 if repeated_n >= range.min && repeated_n <= range.max {
                   results.insert(repeated_n);
                 }
@@ -27,13 +27,17 @@ fn run() -> Result<String, String> {
         }
     }
 
-    return Ok(format!("{}", results.iter().sum::<i64>()));
+    return Ok(format!("{}", results.iter().sum::<u64>()));
 }
 
-fn repeat(n: i64, iterations: usize) -> i64 {
+fn get_length(n: u64) -> u32 {
+  return (n.ilog10() as usize + 1) as u32;
+}
+
+fn repeat(n: u64, iterations: usize) -> u64 {
   let mut result = n;
   let size = n.ilog10() as usize + 1;
-  let multiplier = 10_i64.pow(size as u32);
+  let multiplier = 10_u64.pow(size as u32);
   for _ in 1..iterations {
     result *= multiplier;
     result += n
@@ -50,9 +54,9 @@ fn parse_input() -> Result<Vec<Range>, String> {
         Ok(message) => Ok(message
             .split(",")
             .map(|tuple| {
-                let parts: Vec<i64> = tuple
+                let parts: Vec<u64> = tuple
                     .split("-")
-                    .map(|n| n.parse::<i64>().unwrap())
+                    .map(|n| n.parse::<u64>().unwrap())
                     .collect();
                 return Range {
                     min: parts[0],
@@ -65,6 +69,6 @@ fn parse_input() -> Result<Vec<Range>, String> {
 }
 
 struct Range {
-    min: i64,
-    max: i64,
+    min: u64,
+    max: u64,
 }
