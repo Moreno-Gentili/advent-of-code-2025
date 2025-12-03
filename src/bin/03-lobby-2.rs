@@ -8,19 +8,18 @@ fn run() -> Result<String, String> {
     let total_jolts: u64 = banks.iter().map(|bank| {
         let mut jolts: u64 = 0;
         let mut batteries_to_activate = 12;
-        let mut current_bank = bank.clone();
+        let mut offset = 0;
         while batteries_to_activate > 0 {
             let mut best_jolts: u8 = 0;
             let mut best_jolts_position: usize = 0;
-            for i in 0..current_bank.len()-batteries_to_activate+1 {
-                if current_bank[i] > best_jolts {
-                    best_jolts = current_bank[i];
+            for i in offset..bank.len()-batteries_to_activate+1 {
+                if bank[i] > best_jolts {
+                    best_jolts = bank[i];
                     best_jolts_position = i;
                 }
             }
 
-            current_bank = current_bank.get(best_jolts_position+1..).unwrap().to_vec();
-
+            offset = best_jolts_position + 1;
             let current_jolts = best_jolts as u64 * 10_u64.pow((batteries_to_activate - 1) as u32);
             jolts += current_jolts;
             batteries_to_activate -= 1;
