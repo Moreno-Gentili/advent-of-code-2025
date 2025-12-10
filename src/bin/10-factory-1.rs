@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::{fs, usize};
 use std::ops::Sub;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -6,54 +7,25 @@ fn run() -> Result<String, String> {
     let machines = parse_input()?;
     let mut presses: usize = 0;
 
-    let mut c = 0;
     for machine in machines {
-        let current_indicator_lights = 0_u16;
-        let current_presses = find_minimum_amount_of_presses(&machine, current_indicator_lights, 0);
-        if current_presses == usize::MAX {
-            panic!("Not solvable");
+        let mut queue: VecDeque<Iteration> = VecDeque::new();
+        queue.push_back(Iteration { presses: 0, current_indicator_lights: 0 });
+        while let Some(iteration) = queue.pop_front() {
+            for i in 0..machine.button_wirings.len() {
+                let button = machine.button_wirings[i];
+                let evolution_indicator_lights = iteration.current_indicator_lights ^ button;
+                if hamming_distance(evolution_indicator_lights, machine.desired_indicator_lights) == 0 {
+                    presses += iteration.presses + 1;
+                    queue.clear();
+                    break;
+                } else {
+                    queue.push_back(Iteration { presses: iteration.presses + 1, current_indicator_lights: evolution_indicator_lights });
+                }
+            }
         }
-
-        c += 1;
-        println!("{}", c);
-
-        presses += current_presses;
     }
 
     return Ok(format!("{}", presses));
-}
-
-fn find_minimum_amount_of_presses(machine: &Machine, current_indicator_lights: u16, iteration: u8) -> usize {
-    if iteration >= 7 {
-        return usize::MAX;
-    }
-
-    let current_distance =
-        hamming_distance(machine.desired_indicator_lights, current_indicator_lights);
-
-    // let mut best_distance = current_distance;
-    let mut minimum_amount_of_presses = usize::MAX;
-    for i in 0..machine.button_wirings.len() {
-        let button = machine.button_wirings[i];
-        let evolution_indicator_lights = current_indicator_lights ^ button;
-        let evolution_distance = hamming_distance(evolution_indicator_lights, machine.desired_indicator_lights);
-        // if evolution_distance < current_distance {
-            // best_distance = best_distance.min(evolution_distance);
-            if evolution_distance == 0 {
-                return 1;
-                // minimum_amount_of_presses = 1;
-            } else {
-                let presses = find_minimum_amount_of_presses(machine, evolution_indicator_lights, iteration + 1);
-                minimum_amount_of_presses = minimum_amount_of_presses.min(presses);
-            }
-        //}
-    }
-
-    if minimum_amount_of_presses < usize::MAX {
-        return minimum_amount_of_presses + 1;
-    } else {
-        return usize::MAX;
-    }
 }
 
 fn hamming_distance(n1: u16, n2: u16) -> usize {
@@ -127,6 +99,11 @@ struct Machine {
     desired_indicator_lights: u16,
     button_wirings: Vec<u16>,
     joltage_requirements: Vec<u16>,
+}
+
+struct Iteration {
+    presses: usize,
+    current_indicator_lights: u16
 }
 
 ///////////
