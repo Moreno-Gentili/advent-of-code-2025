@@ -29,16 +29,7 @@ fn run() -> Result<String, String> {
 }
 
 fn hamming_distance(n1: u16, n2: u16) -> usize {
-    // (n1 ^ n2).count_ones() as usize
-    let mut not_matching = 0_usize;
-    for i in 0..16 {
-        let mask = 1 << i;
-        if (n1 & mask) != (n2 & mask) {
-            not_matching += 1;
-        }
-    }
-
-    not_matching
+    (n1 ^ n2).count_ones() as usize
 }
 
 fn parse_input() -> Result<Vec<Machine>, String> {
