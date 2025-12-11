@@ -14,7 +14,7 @@ fn run() -> Result<String, String> {
             for i in 0..machine.button_wirings.len() {
                 let button = machine.button_wirings[i];
                 let evolution_indicator_lights = iteration.current_indicator_lights ^ button;
-                if hamming_distance(evolution_indicator_lights, machine.desired_indicator_lights) == 0 {
+                if evolution_indicator_lights == machine.desired_indicator_lights {
                     presses += iteration.presses + 1;
                     queue.clear();
                     break;
@@ -26,10 +26,6 @@ fn run() -> Result<String, String> {
     }
 
     return Ok(format!("{}", presses));
-}
-
-fn hamming_distance(n1: u16, n2: u16) -> usize {
-    (n1 ^ n2).count_ones() as usize
 }
 
 fn parse_input() -> Result<Vec<Machine>, String> {
