@@ -36,10 +36,8 @@ fn parse_input() -> Result<Vec<Machine>, String> {
             let parts = l.split_whitespace().collect::<Vec<&str>>();
             let indicators = parts[0].len() - 2;
             let indicator_lights = parts[0]
-                .strip_prefix("[")
-                .unwrap()
-                .strip_suffix("]")
-                .unwrap()
+                .strip_prefix("[").unwrap()
+                .strip_suffix("]").unwrap()
                 .chars()
                 .into_iter()
                 .enumerate()
@@ -48,22 +46,11 @@ fn parse_input() -> Result<Vec<Machine>, String> {
                     _ => s,
                 });
 
-            let joltage_requirements = parts[parts.len() - 1]
-                .strip_prefix("{")
-                .unwrap()
-                .strip_suffix("}")
-                .unwrap()
-                .split(',')
-                .map(|n| n.parse::<u16>().unwrap())
-                .collect::<Vec<u16>>();
-
             let button_wirings = parts[1..parts.len() - 1]
                 .iter()
                 .map(|w| {
-                    w.strip_prefix("(")
-                        .unwrap()
-                        .strip_suffix(")")
-                        .unwrap()
+                    w.strip_prefix("(").unwrap()
+                        .strip_suffix(")").unwrap()
                         .split(',')
                         .fold(0_u16, |s, n| {
                             s + (1 << indicators - 1 - n.parse::<usize>().unwrap())
@@ -73,8 +60,7 @@ fn parse_input() -> Result<Vec<Machine>, String> {
 
             Machine {
                 desired_indicator_lights: indicator_lights,
-                button_wirings,
-                joltage_requirements,
+                button_wirings
             }
         })
         .collect();
@@ -84,8 +70,7 @@ fn parse_input() -> Result<Vec<Machine>, String> {
 
 struct Machine {
     desired_indicator_lights: u16,
-    button_wirings: Vec<u16>,
-    joltage_requirements: Vec<u16>,
+    button_wirings: Vec<u16>
 }
 
 struct Iteration {
