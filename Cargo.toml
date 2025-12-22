@@ -1,11 +1,9 @@
 [package]
-name = "advent-of-code"
+name = "advent-of-code-2025"
 version = "0.0.1"
 edition = "2024"
 
 [dependencies]
 itertools = "0.14.0"
-pathfinding = "4.14.0"
 regex = "1.12.2"
 geo = "0.32"
-indexmap = "2.12.1"
