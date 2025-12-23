@@ -7,13 +7,15 @@ string[] lines = File.ReadAllLines("input.txt");
 int sum = 0;
 foreach (string line in lines)
 {
-    using Context ctx = new();
+    // Parse input
     string[] parts = line.Split(" ").Skip(1).ToArray();
-
     int[] requirements = parts.Last().Trim('{', '}').Split(',').Select(int.Parse).ToArray();
     int[][] buttons = parts.SkipLast(1).Select(s =>
         s.Trim('(', ')').Split(',').Select(int.Parse).ToArray()).ToArray();
 
+    // Create the Z3 context
+    using Context ctx = new();
+    
     // Setup equation parameters
     IntExpr[] parameters = Enumerable.Range(0, buttons.Length).Select(b => ctx.MkIntConst($"p{b}")).ToArray();
 
