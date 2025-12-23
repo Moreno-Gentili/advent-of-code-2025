@@ -24,7 +24,7 @@ foreach (string line in lines)
     BoolExpr[] buttonPressesMustAddUpToRequirement = Enumerable.Range(0, requirements.Length).Select(i =>
     {
         IntExpr[] buttonsAffectingRequirement = Enumerable.Range(0, buttons.Length)
-            .Where(j => buttons[j].Contains(i))
+            .Where(b => buttons[b].Contains(i))
             .Select(b => parameters[b])
             .ToArray();
 
